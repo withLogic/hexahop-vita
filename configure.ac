@@ -6,7 +6,6 @@ AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([src/config.h])
 AM_MAINTAINER_MODE([enable])
 
-AC_SEARCH_LIBS([strerror],[cposix])
 AC_PROG_CC
 AC_PROG_CXX
 
@@ -23,6 +22,7 @@ AM_GNU_GETTEXT([external])
 
 AC_CHECK_HEADERS(stdint.h windows.h)
 AC_CHECK_LIB(m, main)
+AC_SEARCH_LIBS([strerror], [cposix])
 
 AM_ICONV
 if test "$am_cv_func_iconv" = yes; then
