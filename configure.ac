@@ -1,5 +1,5 @@
 AC_PREREQ([2.58])
-AC_INIT([Hex-a-hop],[1.2.0],[http://hexahop.sourceforge.net],[hex-a-hop])
+AC_INIT([Hex-a-hop], [1.2.0], [http://hexahop.sourceforge.net], [hex-a-hop])
 AC_CONFIG_AUX_DIR([msc])
 AC_CONFIG_MACRO_DIR([msc])
 AM_INIT_AUTOMAKE([foreign])
@@ -20,13 +20,13 @@ AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.8])
 AM_GNU_GETTEXT_VERSION([0.19.6])
 AM_GNU_GETTEXT([external])
 
-AC_CHECK_HEADERS(stdint.h windows.h)
-AC_CHECK_LIB(m, main)
+AC_CHECK_HEADERS([stdint.h windows.h])
+AC_CHECK_LIB([m], [main])
 AC_SEARCH_LIBS([strerror], [cposix])
 
 AM_ICONV
 if test "$am_cv_func_iconv" = yes; then
-       AC_DEFINE_UNQUOTED(ICONV_CONST, [$am_cv_proto_iconv_arg1],
+       AC_DEFINE_UNQUOTED([ICONV_CONST], [$am_cv_proto_iconv_arg1],
                [Define as const if the declaration of iconv() needs const.])
 fi
 
@@ -36,15 +36,31 @@ PKG_CHECK_MODULES([SDL], [sdl >= $SDL_VERSION], [],
 		  [AC_MSG_ERROR([Cannot find SDL version $SDL_VERSION])])
 
 # Arguments.
-AC_ARG_ENABLE([debug], AS_HELP_STRING([--disable-debug],[Do not compile with debugging symbols]), [want_debug=$enableval], [want_debug=no])
-AC_ARG_ENABLE([sound], AS_HELP_STRING([--disable-sound],[Do not compile with sound support]), [want_sound=$enableval], [want_sound=yes])
-AC_ARG_ENABLE([sdlttf], AS_HELP_STRING([--disable-sdlttf],[Use SDL_Pango instead of SDL_ttf]), [want_ttf=$enableval], [want_ttf=no])
-AC_ARG_ENABLE([relpath], AS_HELP_STRING([--enable-relpath],[Install everything under a single directory]), [want_relative=$enableval], [want_relative=no])
+AC_ARG_ENABLE([debug],
+        [AS_HELP_STRING([--disable-debug],
+                [Do not compile with debugging symbols])],
+        [want_debug=$enableval],
+        [want_debug=no])
+AC_ARG_ENABLE([sound],
+        [AS_HELP_STRING([--disable-sound],
+                [Do not compile with sound support])],
+        [want_sound=$enableval],
+        [want_sound=yes])
+AC_ARG_ENABLE([sdlttf],
+        [AS_HELP_STRING([--disable-sdlttf],
+                [Use SDL_Pango instead of SDL_ttf])],
+        [want_ttf=$enableval],
+        [want_ttf=no])
+AC_ARG_ENABLE([relpath],
+	[AS_HELP_STRING([--enable-relpath],
+		[Install everything under a single directory])],
+	[want_relative=$enableval],
+	[want_relative=no])
 
 # Allow specifying a hard-coded font file at build time
-AC_ARG_WITH(font-path,
-        AS_HELP_STRING([--with-font-path=file.ttf],
-                [Path to the TTF font to use at runtime with SDL_ttf (DejaVu Sans Bold recommended)]),
+AC_ARG_WITH([font-path],
+        [AS_HELP_STRING([--with-font-path=file.ttf],
+                [Path to the TTF font to use at runtime with SDL_ttf (DejaVu Sans Bold recommended)])],
         [FONT_PATH="$withval"],
         [FONT_PATH=""])
 
