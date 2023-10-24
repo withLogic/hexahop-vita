@@ -28,7 +28,7 @@
 # strings. Please update it as well.
 msgid ""
 msgstr ""
-"Project-Id-Version: hex-a-hop\n"
+"Project-Id-Version: hex-a-hop 0.0.20070315\n"
 "Report-Msgid-Bugs-To: hex-a-hop@packages.debian.org\n"
 "POT-Creation-Date: 2009-03-15 02:02+0200\n"
 "PO-Revision-Date: 2007-08-23 20:08+0100\n"
