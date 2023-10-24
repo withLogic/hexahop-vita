@@ -36,9 +36,9 @@ struct PackFile1
 	 * It works on: i386, amd64, mips o32 ABI, powerPC
 	 * Maybe it's also compiler dependent ...
 	 *
-	 * See also http://c-faq.com/struct/padding.html,
-	 * http://c-faq.com/strangeprob/ptralign.html and
-	 * http://bugs.debian.org/442854
+	 * See also https://c-faq.com/struct/padding.html,
+	 * https://c-faq.com/strangeprob/ptralign.html and
+	 * https://bugs.debian.org/442854
 	 * (Need to refer to a C FAQ in a (so called) C++ program, argh ...)
 	 */
 	class Entry {
@@ -47,7 +47,7 @@ struct PackFile1
 		// An array of size 1 (no char* pointer!) is saved after len,
 		// accessing name[0] should (but doesn't always) fit the first
 		// byte after len.
-		// See e.g. http://c-faq.com/aryptr/index.html
+		// See e.g. https://c-faq.com/aryptr/index.html
 		char name[1];
 
 		Entry* GetNext()

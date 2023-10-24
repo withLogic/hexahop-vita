@@ -1,17 +1,17 @@
 <asset>
 	<author>
 		<name>Freesound.org</name>
-		<url>http://www.freesound.org</url>
+		<url>https://www.freesound.org</url>
 	</author>
 	<author>
 		<name>remaxim</name>
 	</author>
 	<license>
 		<name>Creative Commons Sampling Plus 1.0</name>
-		<url>http://creativecommons.org/licenses/sampling+/1.0/</url>
+		<url>https://creativecommons.org/licenses/sampling+/1.0/</url>
 	</license>
 	<details>
-		<source>http://www.freesound.org/samplesViewSingle.php?id=30161</source>
+		<source>https://www.freesound.org/samplesViewSingle.php?id=30161</source>
 		<name>Found jump (nonfree)</name>
 		<type>Sound effect</type>
 		<tag>sfx</tag>

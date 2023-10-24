@@ -65,7 +65,7 @@ bool GetTextInit::IsInit = false;
 #ifdef ENABLE_NLS
 const char *GetTextInit::GetEncoding() const
 {
-	// See http://svn.xiph.org/trunk/vorbis-tools/intl/localcharset.c
+	// See https://svn.xiph.org/trunk/vorbis-tools/intl/localcharset.c
 	// if nl_langinfo isn't found
 	char *locale_enc = nl_langinfo(CODESET);
 	return locale_enc;

@@ -125,7 +125,7 @@ static SDLPango_Context *context = 0;
 static int SDLPangoTextHeight(const std::string &text_utf8, int text_width)
 {
 	// SDLPango_SetMinimumSize limits indeed the maximal size! See
-	// http://bugs.debian.org/438691
+	// https://bugs.debian.org/438691
 	SDLPango_SetMinimumSize(context, text_width, 0);
 	SDLPango_SetText(context, text_utf8.c_str(), -1);
 	return SDLPango_GetLayoutHeight(context);
@@ -146,7 +146,7 @@ static int SDLPangoTextWidth(const std::string &text_utf8)
 static void Print_Pango(int x, int y, const std::string &text_utf8)
 {
 	// Workaround for possible crash, see
-	// http://bugs.debian.org/439071
+	// https://bugs.debian.org/439071
 	if (text_utf8.size() == 0 || (text_utf8.size() == 1 && text_utf8[0]==127))
 		return;
 	assert(text_utf8.find("\n") == std::string::npos);
@@ -173,7 +173,7 @@ static void Print_Pango(int x, int y, const std::string &text_utf8)
 static void Print_Pango_Aligned(int x, int y, int width, const std::string &text_utf8, int align)
 {
 	// Workaround for possible crash, see
-	// http://bugs.debian.org/439071
+	// https://bugs.debian.org/439071
 	if (text_utf8.size() == 0 || (text_utf8.size() == 1 && text_utf8[0]==127))
 		return;
 	if (width<=0)
@@ -181,7 +181,7 @@ static void Print_Pango_Aligned(int x, int y, int width, const std::string &text
 	SDLPango_SetMinimumSize(context, width, 0);
 	int real_width = SDLPangoTextWidth(text_utf8);
 	// Workaround for a crash in SDL Pango, see
-	// http://bugs.debian.org/439855
+	// https://bugs.debian.org/439855
 	if (real_width>width)
 		SDLPango_SetMinimumSize(context, real_width, 0);
 
@@ -196,7 +196,7 @@ static void Print_Pango_Aligned(int x, int y, int width, const std::string &text
 		x -= width/2;
 	}
 	// SDLPango_SetText_GivenAlignment is not (yet?) part of the official Pango
-	// distribution, see http://bugs.debian.org/437865
+	// distribution, see https://bugs.debian.org/437865
 	SDLPango_SetText_GivenAlignment(context, text_utf8.c_str(), -1, alignment);
 	SDL_Surface *surface = SDLPango_CreateSurfaceDraw(context);
 	SDL_Rect dst = {x, y, 1, 1};

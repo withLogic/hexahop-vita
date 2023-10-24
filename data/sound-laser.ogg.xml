@@ -1,17 +1,17 @@
 <asset>
 	<author>
 		<name>Michel Baradari</name>
-		<url>http://apollo-music.de/</url>
+		<url>https://web.archive.org/web/20100409104831/http://www.ultimate-sounds.de/</url>
 	</author>
 	<author>
 		<name>remaxim</name>
 	</author>
 	<license>
 		<name>Creative Commons BY 3.0</name>
-		<url>http://creativecommons.org/licenses/by/3.0/</url>
+		<url>https://creativecommons.org/licenses/by/3.0/</url>
 	</license>
 	<details>
-		<source>http://opengameart.org/content/9-sci-fi-computer-sounds-and-beeps</source>
+		<source>https://opengameart.org/content/9-sci-fi-computer-sounds-and-beeps</source>
 		<mime>audio/ogg</mime>
 		<name>Laser</name>
 		<type>Sound effect</type>

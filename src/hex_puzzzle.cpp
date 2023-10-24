@@ -1728,7 +1728,7 @@ struct HexPuzzle : public State
 	char* ReadAll(FILE* f)
 	{
 		int size;
-		// FIXME: According to http://userpage.fu-berlin.de/~ram/pub/pub_jf47ht20Ht/c_faq_de
+		// FIXME: According to https://userpage.fu-berlin.de/~ram/pub/pub_jf47ht20Ht/c_faq_de
 		// undefined for binary streams! (POSIX does not differ between
 		// ascii and binary, so we are on the safe side in Linux).
 		fseek(f, 0, SEEK_END);

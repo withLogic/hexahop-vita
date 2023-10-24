@@ -927,8 +927,8 @@ msgstr "Pausa"
 #~ msgstr "VEDERE ANCHE"
 
 # type: Plain text
-#~ msgid "You can find more about the game on its homepage: http://hexahop.sourceforge.net/"
-#~ msgstr "È possibile saperne di più circa il gioco sulla homepage: http://hexahop.sourceforge.net/"
+#~ msgid "You can find more about the game on its homepage: https://hexahop.sourceforge.net/"
+#~ msgstr "È possibile saperne di più circa il gioco sulla homepage: https://hexahop.sourceforge.net/"
 
 # type: Plain text
 #~ msgid "In Debian's version, game data is stored in the directory $HOME/.hex-a-hop/. If the environment variable $HOME is not set, it'll use /tmp/ instead."
