@@ -15,6 +15,6 @@ fontconfig support when using sdlttf
 font name config for sdl pango
 Strip out unused lips of suna code
 Move the hints into the game interface
-Fix cppcheck, gcc & i18nspector warnings
+Fix cppcheck, gcc warnings
 Add makefile methods to reencode ogg files
 Switch to opus or a better encoding
