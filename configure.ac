@@ -1,4 +1,4 @@
-AC_PREREQ([2.58])
+AC_PREREQ([2.60])
 AC_INIT([Hex-a-hop], [1.2.0], [http://hexahop.sourceforge.net], [hex-a-hop])
 AC_CONFIG_AUX_DIR([msc])
 AC_CONFIG_MACRO_DIR([msc])
@@ -8,8 +8,6 @@ AM_MAINTAINER_MODE([enable])
 
 AC_PROG_CC
 AC_PROG_CXX
-
-AC_HEADER_STDC
 
 # Require at least this gettext version, but will take any later version too
 AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.8])
