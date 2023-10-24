@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hex-a-hop 0.0.20070315\n"
 "Report-Msgid-Bugs-To: hex-a-hop@packages.debian.org\n"
-"POT-Creation-Date: 2023-10-24 04:06+0200\n"
+"POT-Creation-Date: 2023-10-24 04:09+0200\n"
 "PO-Revision-Date: 2007-08-23 20:08+0100\n"
 "Last-Translator: Bas Wijnen <wijnen@debian.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -709,12 +709,16 @@ msgstr ""
 "Auteursrecht Nederlandse vertaling 2007 Bas Wijnen (e-mail: wijnen@debian.org)\n"
 "Opbouwende kritiek is welkom!"
 
-#. TRANSLATORS: This string is copied twice into the POT file to workaround a
-#. gettext limitation (no macro expansion). The extracted string "Welcome to "
-#. will not be used.
 #: src/menus.h
-msgid "Welcome to "
-msgstr "Welcome to "
+msgid "Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."
+msgstr ""
+"Welkom bij Hex-a-hop!\n"
+"\n"
+"Dit is een puzzelspel met zeshoekige tegels.\n"
+"\n"
+"Er is geen tijdslimiet, en niks beweegt uit zichzelf, dus denk zolang je wilt.\n"
+"\n"
+"Gebruik de cursortoetsen of klik op de pijltjes om door de uitlegpagina's te bewegen. Er komen meer pagina's bij naarmate je verder vordert."
 
 #: src/menus.h
 msgid "Info:"
@@ -940,6 +944,9 @@ msgstr "Spel %d echt verwijderen?"
 msgid "Paused"
 msgstr "Gepauzeerd"
 
+#~ msgid "Welcome to "
+#~ msgstr "Welcome to "
+
 #~ msgid "Yes"
 #~ msgstr "Ja"
 
@@ -1028,13 +1035,3 @@ msgstr "Gepauzeerd"
 # type: Plain text
 #~ msgid "The game has been written by Tom Beaumont, and is distributed under the GNU General Public License, either version 2 of the License, or (at your option) any later version."
 #~ msgstr "Dit spel is geschreven door Tom Beaumont, en wordt verspreid onder de voorwaarden van de GNU General Public License, ofwel versie 2 van deze license, of (naar uw keuze) enige latere versie."
-
-#~ msgid "Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."
-#~ msgstr ""
-#~ "Welkom bij Hex-a-hop!\n"
-#~ "\n"
-#~ "Dit is een puzzelspel met zeshoekige tegels.\n"
-#~ "\n"
-#~ "Er is geen tijdslimiet, en niks beweegt uit zichzelf, dus denk zolang je wilt.\n"
-#~ "\n"
-#~ "Gebruik de cursortoetsen of klik op de pijltjes om door de uitlegpagina's te bewegen. Er komen meer pagina's bij naarmate je verder vordert."

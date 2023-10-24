@@ -145,10 +145,7 @@ _("New feature unlocked!|Each level has an efficiency target for you to try  and
 _("Thanks for playing this little game.    I hope you  enjoy it!    -- --    All content is Copyright 2005 Tom Beaumont    email: tombeaumont@yahoo.com  Any constructive criticism gratefully received!"),
 
 // First help page (31)
-/* TRANSLATORS: This string is copied twice into the POT file to workaround a
-   gettext limitation (no macro expansion). The extracted string "Welcome to "
-   will not be used. */
-_("Welcome to " GAMENAME "!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."),
+_("Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."),
 };
 
 struct HintMessage : public Menu

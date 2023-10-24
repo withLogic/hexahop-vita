@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hex-a-hop 0.0.20070315\n"
 "Report-Msgid-Bugs-To: hex-a-hop@packages.debian.org\n"
-"POT-Creation-Date: 2023-10-24 04:06+0200\n"
+"POT-Creation-Date: 2023-10-24 04:09+0200\n"
 "PO-Revision-Date: 2007-09-20 00:11+0200\n"
 "Last-Translator: Noritada Kobayashi <nori1@dolphin.c.u-tokyo.ac.jp>\n"
 "Language-Team: Japanese\n"
@@ -732,12 +732,14 @@ msgstr ""
 "email: tombeaumont@yahoo.com\n"
 "建設的な批判はどんなものでも潔く受け止めます!"
 
-#. TRANSLATORS: This string is copied twice into the POT file to workaround a
-#. gettext limitation (no macro expansion). The extracted string "Welcome to "
-#. will not be used.
 #: src/menus.h
-msgid "Welcome to "
+msgid "Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."
 msgstr ""
+"Hex-a-hopへようこそ!\n"
+"\n"
+"本ゲームは、六角形のタイルを用いたパズルゲームです。時間制限も実時間要素もありませんので、好きなだけ時間をかけて解いてください。\n"
+"\n"
+"ヘルプページをスクロールするには、カーソルキーを使うか矢印をマウスでクリックしてください。ヘルプページは、ゲームが進むにつれて追加されていきます。"
 
 #: src/menus.h
 msgid "Info:"
@@ -1045,14 +1047,6 @@ msgstr "一時中断"
 # type: Plain text
 #~ msgid "The game has been written by Tom Beaumont, and is distributed under the GNU General Public License, either version 2 of the License, or (at your option) any later version."
 #~ msgstr "本ゲームは Tom Beaumont が書き、GNU General Public License バージョン 2 または (オプションで) それ以降のバージョンの下で配布しています。"
-
-#~ msgid "Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."
-#~ msgstr ""
-#~ "Hex-a-hopへようこそ!\n"
-#~ "\n"
-#~ "本ゲームは、六角形のタイルを用いたパズルゲームです。時間制限も実時間要素もありませんので、好きなだけ時間をかけて解いてください。\n"
-#~ "\n"
-#~ "ヘルプページをスクロールするには、カーソルキーを使うか矢印をマウスでクリックしてください。ヘルプページは、ゲームが進むにつれて追加されていきます。"
 
 #~ msgid "Complete %d  more levels  to unlock!"
 #~ msgstr ""

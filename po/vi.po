@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hex-a-hop 0.0.20070315\n"
 "Report-Msgid-Bugs-To: hex-a-hop@packages.debian.org\n"
-"POT-Creation-Date: 2023-10-24 04:06+0200\n"
+"POT-Creation-Date: 2023-10-24 04:09+0200\n"
 "PO-Revision-Date: 2007-08-24 14:23+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -709,12 +709,14 @@ msgstr ""
 "\n"
 "Mời bạn ghi chú và gửi báo cáo lỗi."
 
-#. TRANSLATORS: This string is copied twice into the POT file to workaround a
-#. gettext limitation (no macro expansion). The extracted string "Welcome to "
-#. will not be used.
 #: src/menus.h
-msgid "Welcome to "
-msgstr "Welcome to "
+msgid "Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."
+msgstr ""
+"Chào mừng bạn chơi Hex-a-hop !\n"
+"\n"
+"Đây là một trờ chối đố dựa vào cái ngói hình sáu cạnh. Thời gian không bị hạn chế, vậy bạn có thể chơi tự do.\n"
+"\n"
+"Dùng phím con trỏ hay nhấn vào mũi tên để cuộn qua trợ giúp. Trang trợ giúp thêm sẽ xuất hiện khi bạn tiến lên qua trò chơi."
 
 #: src/menus.h
 msgid "Info:"
@@ -930,6 +932,9 @@ msgstr "Thực sự xoá lượt chơi %d không?"
 msgid "Paused"
 msgstr "Bị tạm dừng"
 
+#~ msgid "Welcome to "
+#~ msgstr "Welcome to "
+
 #~ msgid "Yes"
 #~ msgstr "Có"
 
@@ -1018,11 +1023,3 @@ msgstr "Bị tạm dừng"
 # type: Plain text
 #~ msgid "The game has been written by Tom Beaumont, and is distributed under the GNU General Public License, either version 2 of the License, or (at your option) any later version."
 #~ msgstr "Trò chơi này được Tom Beaumont tạo ; nó được phân phối dưới điều kiện của Giấy Phép Công Cộng GNU (GPL), hoặc phiên bản 2 của Giấy Phép, hoặc (tùy chọn) bất cứ phiên bản sau nào."
-
-#~ msgid "Welcome to Hex-a-hop!    This is a puzzle game based on hexagonal tiles.  There is no time limit and no real-time element, so  take as long as you like.    Use the cursor keys or click on the arrows to  scroll through the help pages. More pages will be  added as you progress through the game."
-#~ msgstr ""
-#~ "Chào mừng bạn chơi Hex-a-hop !\n"
-#~ "\n"
-#~ "Đây là một trờ chối đố dựa vào cái ngói hình sáu cạnh. Thời gian không bị hạn chế, vậy bạn có thể chơi tự do.\n"
-#~ "\n"
-#~ "Dùng phím con trỏ hay nhấn vào mũi tên để cuộn qua trợ giúp. Trang trợ giúp thêm sẽ xuất hiện khi bạn tiến lên qua trò chơi."
