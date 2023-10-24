@@ -1,8 +1,8 @@
 DOMAIN = $(PACKAGE)
 subdir = po
 top_builddir = ..
-XGETTEXT_OPTIONS = --keyword=_ --keyword=N_
-MSGMERGE_OPTIONS = --no-wrap
+XGETTEXT_OPTIONS = --add-location=file --keyword=_ --keyword=N_
+MSGMERGE_OPTIONS = --add-location=file --no-wrap
 COPYRIGHT_HOLDER = Hex-a-Hop developers and contributors
 MSGID_BUGS_ADDRESS = hex-a-hop@packages.debian.org
 EXTRA_LOCALE_CATEGORIES =
