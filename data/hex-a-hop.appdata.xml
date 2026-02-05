@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2014 Tim Waugh <twaugh@redhat.com> -->
-<application>
-  <id type="desktop">hex-a-hop.desktop</id>
+<component>
+  <id>net.sourceforge.hexahop</id>
+  <name>Hex-a-Hop</name>
+  <developer id="net.sourceforge.hexahop">
+    <name>The Hex-a-Hop contributors</name>
+  </developer>
   <metadata_license>CC0-1.0</metadata_license>
   <summary>Break all the green hexagons without getting trapped</summary>
   <description>
@@ -23,8 +27,21 @@
   </description>
   <url type="homepage">https://sourceforge.net/projects/hexahop</url>
   <screenshots>
-    <screenshot type="default">https://hexahop.sourceforge.net/images/screenshot3.jpg</screenshot>
-    <screenshot>https://hexahop.sourceforge.net/images/screenshot1.jpg</screenshot>
-    <screenshot>https://hexahop.sourceforge.net/images/screenshot4.jpg</screenshot>
+    <screenshot type="default">
+      <caption>127 turns in, 6 green tiles to go.</caption>
+      <image>https://hexahop.sourceforge.net/images/screenshot1.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>The level selection map screen.</caption>
+      <image>https://hexahop.sourceforge.net/images/screenshot2.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>At the start of a level with trampolines, spinners, walls and blue tiles.</caption>
+      <image>https://hexahop.sourceforge.net/images/screenshot3.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Early on a level with green tiles around lots of ice.</caption>
+      <image>https://hexahop.sourceforge.net/images/screenshot4.jpg</image>
+    </screenshot>
   </screenshots>
-</application>
+</component>
