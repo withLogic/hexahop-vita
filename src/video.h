@@ -1,7 +1,7 @@
 #ifndef __HHOP_VIDEO_H__
 #define __HHOP_VIDEO_H__
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 // Uncomment this to check cross-platform compilation compatibility
 // #undef WIN32
@@ -14,6 +14,7 @@
 // Hacky workaround for MSVC's broken for scoping
 //#define for if (0) ; else for
 
-extern SDL_Surface * screen;
+extern SDL_Window* sdlWindow;
+extern SDL_Renderer * sdlRenderer;
 
 #endif

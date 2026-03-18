@@ -19,7 +19,7 @@
 
 struct HexPuzzle;
 
-#include <SDL_endian.h>
+#include <SDL2/SDL_endian.h>
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 #define SWAP16(X)    (X)

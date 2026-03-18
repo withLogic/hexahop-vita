@@ -1,257 +1,129 @@
+## This file is a quick tutorial on writing CMakeLists for targeting the Vita
+cmake_minimum_required(VERSION 2.8)
 
-################################################################
-# Project hex-a-hop
-#
-# run cmake with:
-# cmake -DCMAKE_INSTALL_PREFIX=./local \
-#       -DCMAKE_BUILD_TYPE=Release ..
-################################################################
+## This includes the Vita toolchain, must go before project definition
+# It is a convenience so you do not have to type
+# -DCMAKE_TOOLCHAIN_FILE=$VITASDK/share/vita.toolchain.cmake for cmake. It is
+# highly recommended that you include this block for all projects.
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  if(DEFINED ENV{VITASDK})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VITASDK}/share/vita.toolchain.cmake" CACHE PATH "toolchain file")
+  else()
+    message(FATAL_ERROR "Please define VITASDK to point to your SDK path!")
+  endif()
+endif()
 
-project(hex-a-hop)
+## Define project parameters here
+# Name of the project
+project(Hex-A-Hop)
+# This line adds Vita helper macros, must go after project definition in order
+# to build Vita specific artifacts (self/vpk).
+include("${VITASDK}/share/vita.cmake" REQUIRED)
 
-# version number
-set(hah_MAJOR 1)
-set(hah_MINOR 1)
-set(hah_PATCH 0)
-set(hah_VERSION ${hah_MAJOR}.${hah_MINOR}.${hah_PATCH})
-set(hah_DESCRIPTION "Puzzle Game")
-set(hah_HOMEPAGE "https://hexahop.sourceforge.net")
-set(hah_EXENAME "hex-a-hop")
-set(hah_PACKAGENAME "Hex-a-hop")
+## Configuration options for this app
+# Display name (under bubble in LiveArea)
+set(VITA_APP_NAME "hex-a-hop")
+# Unique ID must be exactly 9 characters. Recommended: XXXXYYYYY where X =
+# unique string of developer and Y = a unique number for this app
+set(VITA_TITLEID  "WLOGICHAH")
+set(VITA_VERSION  "01.00")
 
-# Minimum cmake version required
-cmake_minimum_required(VERSION 2.6.2)
+add_compile_definitions(DATADIR="ux0:data/hex-a-hop/")
+add_compile_definitions(VERSION=1.0)
+add_compile_definitions(REVISION=0)
 
+# Moving SCREEN_HEIGHT and SCREEN_WIDTH to the CMake script
+# This will let us specify different hardware screensizes.
+add_compile_definitions(GAMENAME="Hex-A-Hop")
+add_compile_definitions(SCREEN_WIDTH=960)
+add_compile_definitions(SCREEN_HEIGHT=544)
+add_compile_definitions(FONT_PATH="font.ttf")
+add_compile_definitions(ENABLE_NLS)
+add_compile_definitions(LOCALEDIR="ux0:data/hex-a-hop/po/")
 
-################################################################
-# configure header files, add compiler flags
-################################################################
+## Flags and includes for building
+# Note that we make sure not to overwrite previous flags
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# Optional. You can specify more param.sfo flags this way.
+set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
 
-add_definitions(-Wall)
-
-if(APPLE)
-	add_definitions(-DRELATIVE_PATHS)
-endif(APPLE)
-
-# Need these modules to do subsequent checks.
-include(CheckIncludeFiles)
-
-# check if header file exists
-check_include_files(libintl.h HAVE_LIBINTL_H)
-check_include_files(inttypes.h HAVE_INTTYPES_H)
-check_include_files(memory.h HAVE_MEMORY_H)
-check_include_files(stdint.h HAVE_STDINT_H)
-check_include_files(stdlib.h HAVE_STDLIB_H)
-check_include_files(strings.h HAVE_STRINGS_H)
-check_include_files(string.h HAVE_STRING_H)
-check_include_files(sys/stat.h HAVE_SYS_STAT_H)
-check_include_files(sys/types.h HAVE_SYS_TYPES_H)
-check_include_files(unistd.h HAVE_UNISTD_H)
-check_include_files(windows.h HAVE_WINDOWS_H)
-
-# On windows systems the math library is not separated so do not specify
-# it unless you are on a non-windows system.
-if(NOT WIN32)
-  find_library(HAVE_LIBM NAMES m PATHS /usr/local/lib /usr/lib)
-  if(NOT HAVE_LIBM)
-    message(FATAL_ERROR "Cannot find required math library")
-  endif(NOT HAVE_LIBM)
-else(NOT WIN32)
-  set(HAVE_LIBM)
-endif(NOT WIN32)
-
-# create config.h
-configure_file(
-  ${CMAKE_SOURCE_DIR}/src/config.h.cmake
-  ${CMAKE_BINARY_DIR}/src/config.h
-)
-include_directories(${CMAKE_BINARY_DIR}/src)
-
-add_definitions(-DHAVE_CONFIG_H)
-
-################################################################
-# Find needed libraries
-################################################################
-
-find_package(SDL REQUIRED)
-include_directories(${SDL_INCLUDE_DIR})
-
-find_package(SDL_mixer REQUIRED)
-include_directories(${SDLMIXER_INCLUDE_DIR})
-
-find_package(SDL_ttf REQUIRED)
-include_directories(${SDLTTF_INCLUDE_DIR})
-
-################################################################
-# game executable
-################################################################
-
-# source files
-set(
-  hah_SRCS
-		src/gfx.cpp
-		src/gfx_list.h
-		src/hex_puzzzle.cpp
-		src/i18n.cpp
-		src/i18n.h
-		src/level_list.h
-		src/menus.h
-		src/packfile.h
-		src/savestate.h
-		src/sfx.cpp
-		src/sfx.h
-		src/state.h
-		src/system-directory.c
-		src/system-directory.h
-		src/system-relative.c
-		src/system-relative.h
-		src/text.cpp
-		src/text.h
-		src/tiletypes.h
-		src/video.h
+# Add any additional include paths here
+include_directories(
 )
 
-set(
-	hah_data
-		data/emi.dat
-		data/font.dat
-		data/gradient.dat
-		data/icon.bmp
-		data/levels.dat
-		data/map.dat
-		data/map_top.dat
-		data/music-ending-nonfree.ogg
-		data/music-game-nonfree-1.ogg
-		data/music-game-nonfree.ogg
-		data/sound-builder-nonfree.ogg
-		data/sound-collapse-nonfree.ogg
-		data/sound-crack.ogg
-		data/sound-death.ogg
-		data/sound-explode-big.ogg
-		data/sound-explode-small.ogg
-		data/sound-floater-enter.ogg
-		data/sound-found-antiice-nonfree.ogg
-		data/sound-found-jump-nonfree.ogg
-		data/sound-ice.ogg
-		data/sound-laser.ogg
-		data/sound-lift-down-nonfree.ogg
-		data/sound-lift-up-nonfree.ogg
-		data/sound-spinner-nonfree.ogg
-		data/sound-trampoline.ogg
-		data/sound-used-antiice.ogg
-		data/sound-used-jump.ogg
-		data/sound-win.ogg
-		data/tiles.dat
-		data/tiles_reflect.dat
-		data/title.dat
+# Add any additional library paths here
+# ${CMAKE_CURRENT_BINARY_DIR} lets you use any library currently being built
+link_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(
-  hah_RSRCS
-		data/hex-a-hop.icns
+set(SOURCE_FILES 
+  src/system-directory.c
+  src/system-relative.c
+  src/gfx.cpp
+  src/hex_puzzzle.cpp
+  src/i18n.cpp
+  src/sfx.cpp
+  src/joy.cpp
+  src/text.cpp
 )
 
-if(APPLE)
-	add_executable(
-		hex-a-hop MACOSX_BUNDLE
-			${hah_SRCS}
-			${hah_data}
-			${hah_RSRCS}
-	)
+## Build and link
+# Add all the files needed to compile here
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-	# Mac OS X bundle specific settings
-	set(MACOSX_BUNDLE true)
-	set(MACOSX_BUNDLE_BUNDLE_NAME hex-a-hop)
-	set(MACOSX_BUNDLE_INFO_STRING "hex-a-hop ${hah_VERSION}")
-	set(MACOSX_BUNDLE_LONG_VERSION_STRING "${hah_VERSION}")
-	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${hah_VERSION}")
-	set(MACOSX_BUNDLE_BUNDLE_VERSION "${hah_VERSION}")
-  set(MACOSX_BUNDLE_ICON_FILE hex-a-hop.icns)
-
-  # paths for data files in bundle
-  set_source_files_properties(
-    ${hah_RSRCS}
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION Resources
-  )
-  set_source_files_properties(
-    ${hah_data}
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION Resources/data
-  )
-else(APPLE)
-	add_executable(
-		hex-a-hop
-			${hah_SRCS}
-	)
-endif(APPLE)
-
-target_link_libraries(
-	hex-a-hop
-		${SDL_LIBRARY}
-		${SDLMIXER_LIBRARY}
-		${SDLTTF_LIBRARY}
-		SDLmain
+# Library to link to (drop the -l prefix). This will mostly be stubs.
+target_link_libraries(${PROJECT_NAME}
+  SDL2_image
+  SDL2_mixer
+  SDL2_ttf
+  SDL2_gfx
+  SDL2
+  freetype
+  vorbisfile
+  vorbis
+  opusfile
+  opus
+  xmp
+  bz2
+  ogg
+  mpg123
+  modplug
+  webpdemux
+  webp
+  jpeg
+  png
+  mikmod
+  FLAC
+  vita2d
+  intl
+  pthread
+  SceAppUtil_stub
+  SceDisplay_stub
+  SceCtrl_stub
+  SceAudio_stub
+  SceSysmodule_stub
+  SceMotion_stub
+  SceGxm_stub
+  SceCommonDialog_stub
+  SceTouch_stub
+  SceHid_stub
+  SceAudioIn_stub
+  m
+  z
+  stdc++
 )
 
-
-#####################################################################
-# Installation
-#####################################################################
-
-# executable
-install(
-	TARGETS hex-a-hop
-		RUNTIME DESTINATION .
-		BUNDLE DESTINATION .
+## Create Vita files
+vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME})
+# The FILE directive lets you add additional files to the VPK, the syntax is
+# FILE src_path dst_path_in_vpk. In this case, we add the LiveArea paths.
+vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
+  VERSION ${VITA_VERSION}
+  NAME ${VITA_APP_NAME}
+  FILE psp2/sce_sys/icon0.png sce_sys/icon0.png
+  FILE psp2/sce_sys/livearea/contents/bg.png sce_sys/livearea/contents/bg.png
+  FILE psp2/sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
+  FILE psp2/sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
 )
-
-# copy SDL frameworks into app bundle for Mac OS X
-if(APPLE)
-	INSTALL(DIRECTORY /Users/smekal/Library/Frameworks/SDL.framework
-					DESTINATION hex-a-hop.app/Contents/Frameworks)
-	INSTALL(DIRECTORY /Users/smekal/Library/Frameworks/SDL_mixer.framework
-					DESTINATION hex-a-hop.app/Contents/Frameworks)
-	INSTALL(DIRECTORY /Users/smekal/Library/Frameworks/SDL_ttf.framework
-					DESTINATION hex-a-hop.app/Contents/Frameworks)
-endif(APPLE)
-
-
-#####################################################################
-# Package
-#####################################################################
-
-# CPack version numbers for release tarball name.
-set(CPACK_PACKAGE_VERSION_MAJOR ${hah_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${hah_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${hah_PATCH})
-
-# To Create a package, one can run "cpack -G DragNDrop CPackConfig.cmake" on Mac OS X
-# where CPackConfig.cmake is created by including CPack
-# And then there's ways to customize this as well
-set(CPACK_DMG_VOLUME_NAME "hex-a-hop")
-set(CPACK_BINARY_DRAGNDROP ON)
-include(CPack)
-
-
-################################################################
-# summary
-################################################################
-
-message( "" )
-message( "Summary:" )
-message( "  CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}" )
-message( "  WIN32 = ${WIN32}" )
-message( "  UNIX = ${UNIX}" )
-message( "  APPLE = ${APPLE}" )
-message( "  CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}" )
-message( "  CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
-message( "  CMAKE_OSX_ARCHITECTURES = ${CMAKE_OSX_ARCHITECTURES}" )
-message( "  CMAKE_GENERATOR = ${CMAKE_GENERATOR}" )
-message( "  SDL_INCLUDE_DIR = ${SDL_INCLUDE_DIR}" )
-message( "  SDL_LIBRARY = ${SDL_LIBRARY}" )
-message( "  SDLMIXER_INCLUDE_DIR = ${SDLMIXER_INCLUDE_DIR}" )
-message( "  SDLMIXER_LIBRARY = ${SDLMIXER_LIBRARY}" )
-message( "  SDLTTF_INCLUDE_DIR = ${SDLTTF_INCLUDE_DIR}" )
-message( "  SDLTTF_LIBRARY = ${SDLTTF_LIBRARY}" )
-message( "" )

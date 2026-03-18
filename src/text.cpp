@@ -10,7 +10,7 @@
 
 #ifndef ENABLE_PANGO
 
-#include <SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 
 static TTF_Font* font;
 
@@ -97,9 +97,25 @@ static void TextPrintUTF8(int x, int y, const char* str)
 {
 	SDL_Color fg = { 255, 255, 255, 255 };
 	SDL_Surface* surface = TTF_RenderUTF8_Blended (font, str, fg);
-	SDL_Rect dst = {x, y, 1, 1};
-	SDL_BlitSurface(surface, NULL, screen, &dst);
+	if(!surface)
+	{
+		return;
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
+	if(!texture)
+	{
+		return;
+	}
+
+	int w, h;
+	SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+	SDL_Rect dst = {x, y, w, h};
+	SDL_RenderCopy(sdlRenderer, texture, NULL, &dst);
+
 	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture);
 }
 
 static void TextPrintRAW(int x, int y, const char* str)
@@ -109,9 +125,25 @@ static void TextPrintRAW(int x, int y, const char* str)
 	ConvertToUTF8(str, tmp, 5000);
 	SDL_Color fg = { 255, 255, 255, 255 };
 	SDL_Surface* surface = TTF_RenderUTF8_Blended (font, tmp, fg);
-	SDL_Rect dst = {x, y, 1, 1};
-	SDL_BlitSurface(surface, NULL, screen, &dst);
+	if(!surface)
+	{
+		return;
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
+	if(!texture)
+	{
+		return;
+	}
+
+	int w, h;
+	SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+	SDL_Rect dst = {x, y, w, h};
+	SDL_RenderCopy(sdlRenderer, texture, NULL, &dst);
+
 	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture);
 }
 
 #else
@@ -259,7 +291,7 @@ int TextHeight(const std::string &text_utf8, int width)
 {
 	int h;
 	int val = 0;
-	char* tmp = strdup(text_utf8.c_str());
+	char* tmp = SDL_strdup(text_utf8.c_str());
 
 	std::vector<std::string> lines = TextWrapString(tmp, width, false);
 	std::vector<std::string>::iterator iter;
@@ -268,7 +300,7 @@ int TextHeight(const std::string &text_utf8, int width)
 		TTF_SizeUTF8(font, iter->c_str(), NULL, &h);
 		val += h;
 	}
-	free (tmp);
+	SDL_free(tmp);
 
 	return val;
 }
@@ -451,17 +483,26 @@ void PrintC(bool split, int x, int y, const char * string, ...)
 void ConvertToUTF8(const std::string &text_locally_encoded, char *text_utf8, size_t text_utf8_length)
 {
 #ifdef ENABLE_NLS
-	// Is this portable?
-	size_t text_length = text_locally_encoded.length()+1;
-	errno = 0;
-	static const char *locale_enc = gettext_init.GetEncoding();
-	iconv_t cd = iconv_open("UTF-8", locale_enc);
-	ICONV_CONST char *in_buf = const_cast<char *>(&text_locally_encoded[0]);
-	char *out_buf = &text_utf8[0];
-	iconv(cd, &in_buf, &text_length, &out_buf, &text_utf8_length);
-	iconv_close(cd);
-	if (errno != 0)
-		std::cerr << "An error occurred recoding " << text_locally_encoded << " to UTF8" << std::endl;
+    SDL_iconv_t cd = SDL_iconv_open("UTF-8", "CHAR");
+    
+    if (cd == (SDL_iconv_t)-1) {
+        SDL_strlcpy(text_utf8, text_locally_encoded.c_str(), text_utf8_length);
+        return;
+    }
+
+    const char *in_buf = text_locally_encoded.c_str();
+    size_t in_bytes_left = text_locally_encoded.length();
+    char *out_buf = text_utf8;
+    size_t out_bytes_left = text_utf8_length - 1;
+
+    size_t result = SDL_iconv(cd, &in_buf, &in_bytes_left, &out_buf, &out_bytes_left);
+
+    *out_buf = '\0';
+    SDL_iconv_close(cd);
+
+    if (result == (size_t)-1) {
+        std::cerr << "SDL_iconv error: " << SDL_GetError() << std::endl;
+	}
 #else
 	strcpy (text_utf8, text_locally_encoded.c_str ());
 #endif

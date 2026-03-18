@@ -20,11 +20,12 @@
 
 #include "state.h"
 #include "sfx.h"
+#include "joy.h"
 #include "text.h"
 #include "system-relative.h"
 #include <cassert>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #ifdef WIN32
 /*	#include <SDL_syswm.h>
@@ -42,7 +43,11 @@
 StateMakerBase* StateMakerBase::first = 0;
 State* StateMakerBase::current = 0;
 
-int SDL_focus = SDL_APPACTIVE | SDL_APPINPUTFOCUS;	// Initial focus state
+#define LEGACY_SDL_APPMOUSEFOCUS 0x01
+#define LEGACY_SDL_APPINPUTFOCUS 0x02
+#define LEGACY_SDL_APPACTIVE     0x04
+
+int SDL_focus = LEGACY_SDL_APPINPUTFOCUS | LEGACY_SDL_APPACTIVE;
 
 #ifdef WIN32
 	#include <windows.h>
@@ -113,30 +118,40 @@ int quitting = 0;
 double stylusx= 0, stylusy= 0;
 int stylusok= 0;
 float styluspressure = 0;
-SDL_Surface * screen = 0;
-SDL_Surface * realScreen = 0;
+SDL_Window* sdlWindow = nullptr;
+SDL_Renderer * sdlRenderer = nullptr;
 
 extern State* MakeWorld();
 
 bool fullscreen = false;
 
-void InitScreen()
+bool InitScreen()
 {
-	realScreen = SDL_SetVideoMode(
-		SCREEN_W, SCREEN_H, // Width, Height
-		0, // Current BPP
-		SDL_SWSURFACE | SDL_DOUBLEBUF | (fullscreen ? SDL_FULLSCREEN : 0) );
+	Uint32 windowFlags = SDL_WINDOW_SHOWN;
+	if (fullscreen) windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-	if (screen)
-		SDL_FreeSurface(screen);
+	if (!sdlWindow) {
+		sdlWindow = SDL_CreateWindow("Hex-a-Hop", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, windowFlags);
+	} else {
+		SDL_SetWindowFullscreen(sdlWindow, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	}
 
-	SDL_Surface* tempscreen = SDL_CreateRGBSurface(
-		SDL_SWSURFACE,
-		SCREEN_W, SCREEN_H,
-		16, 0xf800, 0x07e0, 0x001f, 0);
+	if (!sdlWindow) {
+		return 0;
+	}
 
-	screen = SDL_DisplayFormat(tempscreen);
-	SDL_FreeSurface(tempscreen);
+	if (!sdlRenderer) {
+		sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	}
+
+	if (!sdlRenderer) {
+		return 0;
+	}
+
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_W, SCREEN_H);
+
+	return 1;
 }
 
 void ToggleFullscreen()
@@ -228,14 +243,17 @@ int main(int /*argc*/, char * /*argv*/[])
 	SDL_Surface* icon = IMG_Load(base_path + "/hex-a-hop-16.png");
 	if (icon)
 	{
-		SDL_SetColorKey(icon, SDL_SRCCOLORKEY, SDL_MapRGB(icon->format, 0, 255, 255));
-		SDL_WM_SetIcon(icon, NULL);
+		// WL -- TODO
+		//SDL_SetColorKey(icon, SDL_SRCCOLORKEY, SDL_MapRGB(icon->format, 0, 255, 255));
+		//SDL_WM_SetIcon(icon, NULL);
 		SDL_FreeSurface(icon);
 	}
 
+	InitLocalization();
 	InitSound(base_path);
+	InitJoystick();
 
-	SDL_WarpMouse(SCREEN_W/2, SCREEN_H/2);
+	SDL_WarpMouseInWindow(sdlWindow, SCREEN_W/2, SCREEN_H/2);
 
 	int videoExposed = 1;
 
@@ -283,14 +301,17 @@ int main(int /*argc*/, char * /*argv*/[])
 
 			if (videoExposed)
 			{
+				SDL_RenderClear(sdlRenderer);
 				StateMakerBase::current->Render();
+				SDL_RenderPresent(sdlRenderer);
 
-				if (screen && realScreen!=screen)
-				{
-					SDL_Rect r = {0,0,SCREEN_W,SCREEN_H};
-					SDL_BlitSurface(screen, &r, realScreen, &r);
-				}
-				SDL_Flip(realScreen);
+				//if (screen && realScreen!=screen)
+				//{
+				//	SDL_Rect r = {0,0,SCREEN_W,SCREEN_H};
+				//	SDL_BlitSurface(screen, &r, realScreen, &r);
+				//}
+				//SDL_Flip(realScreen);				
+
 				videoExposed = 0;
 			}
 
@@ -338,10 +359,11 @@ int main(int /*argc*/, char * /*argv*/[])
 
 		switch (e.type)
 		{
+#ifndef __vita__
 			case SDL_VIDEOEXPOSE:
 				videoExposed = 1;
 				break;
-
+#endif
 #ifdef WIN32
 /*			case SDL_SYSWMEVENT:
 			{
@@ -377,6 +399,7 @@ int main(int /*argc*/, char * /*argv*/[])
 			}*/
 #endif
 
+#ifndef __vita__
 			case SDL_ACTIVEEVENT:
 			{
 				int gain = e.active.gain ? e.active.state : 0;
@@ -391,6 +414,7 @@ int main(int /*argc*/, char * /*argv*/[])
 
 				break;
 			}
+#endif
 
 			case SDL_MOUSEMOTION:
 				noMouse = false;
@@ -449,6 +473,20 @@ int main(int /*argc*/, char * /*argv*/[])
 			}
 			break;
 
+#ifndef DISABLE_JOYSTICK
+				case SDL_JOYBUTTONUP:
+					StateMakerBase::current->JoyButtonReleased(e.jbutton.button);
+					break;
+
+				case SDL_JOYBUTTONDOWN:
+					if(StateMakerBase::current->JoyButtonPressed(e.jbutton.button)){}
+					else {
+						int key = MapJoyToScancode(e.jbutton.button);
+						StateMakerBase::GetNew(key);
+					}
+					break;				
+#endif
+
 			case SDL_QUIT:
 				quitting = 1;
 				break;
@@ -457,6 +495,10 @@ int main(int /*argc*/, char * /*argv*/[])
 
 	TextFree();
 	FreeSound();
+
+	if (sdlRenderer) SDL_DestroyRenderer(sdlRenderer);
+	if (sdlWindow) SDL_DestroyWindow(sdlWindow);
+	
 	SDL_Quit();
 	return 0;
 }

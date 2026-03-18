@@ -65,6 +65,28 @@ struct Menu {
 			return false;
 		return true;
 	}
+
+	virtual bool JoyButtonPressed(int key)
+	{
+		if(key == SDL_CONTROLLER_BUTTON_DPAD_UP)
+		{
+			Move(-1);
+			noMouse=1;
+		} else if(key == SDL_CONTROLLER_BUTTON_DPAD_DOWN) {
+			Move(1);
+			noMouse=1;
+		} else if(key == SDL_CONTROLLER_BUTTON_CROSS) {
+			Select();
+			noMouse=1;
+		} else if(key == SDL_CONTROLLER_BUTTON_CIRCLE) {
+			Cancel();
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
 	virtual void Mouse(int /*x*/, int /*y*/, int /*dx*/, int /*dy*/, int buttons_pressed, int /*buttons_released*/, int /*buttons*/)
 	{
 		if (buttons_pressed==4 || buttons_pressed==2)
@@ -239,8 +261,17 @@ struct HintMessage : public Menu
 		// XXX: Height is reduced in SDL_FillRect!!? Why? ==> Use a copy:
 		SDL_Rect r2 = InnerTextWindowRect;
 		SDL_Rect r = OuterTextWindowRect;
-		SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 60,90,90));
-		SDL_FillRect(screen, &r2, SDL_MapRGB(screen->format, 20,50,50));
+		//SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 60,90,90));
+		SDL_SetRenderDrawColor(sdlRenderer, 60, 90, 90, 255);
+		SDL_RenderFillRect(sdlRenderer, &r);
+
+		//SDL_FillRect(screen, &r2, SDL_MapRGB(screen->format, 20,50,50));
+		SDL_SetRenderDrawColor(sdlRenderer, 20, 50, 50, 255);
+		SDL_RenderFillRect(sdlRenderer, &r);
+
+		// reset the renderer color
+		SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+
 		Print(OuterTextWindowRect.x+FONT_SPACING/4, y-FONT_SPACING, "%s", title);
 		/* TRANSLATORS: This specifies how the text in the help dialog should
 		   be aligned. Do *not* translate the text itself but use one of "left",
@@ -261,6 +292,13 @@ struct HintMessage : public Menu
 	}
 
 	bool KeyPressed(int /*key*/, int /*mod*/)
+	{
+		if (state==0 && time>0.2)
+			state = 1, time=0;
+		return true;
+	}
+
+	bool JoyButtonPressed(int /*button*/)
 	{
 		if (state==0 && time>0.2)
 			state = 1, time=0;
@@ -323,6 +361,17 @@ struct HintReview : public HintMessage
 			Move(1);
 		else
 			return Menu::KeyPressed(key, mod);
+		return true;
+	}
+
+	bool JoyButtonPressed(int button)
+	{
+		if (button==SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+			Move(-1);
+		else if (button==SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
+			Move(1);
+		else
+			return Menu::JoyButtonPressed(button);
 		return true;
 	}
 
@@ -546,8 +595,15 @@ struct OptMenu : public Menu
 	}
 	void RenderBG()
 	{
-		SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 60,90,90));
-		SDL_FillRect(screen, &r2, SDL_MapRGB(screen->format, 20,50,50));
+		//SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 60,90,90));
+		SDL_SetRenderDrawColor(sdlRenderer, 60, 90, 90, 255);
+		SDL_RenderFillRect(sdlRenderer, &r);
+
+		//SDL_FillRect(screen, &r2, SDL_MapRGB(screen->format, 20,50,50));
+		SDL_SetRenderDrawColor(sdlRenderer, 20, 50, 50, 255);
+		SDL_RenderFillRect(sdlRenderer, &r);
+
+		SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	}
 	void RenderTitle()
 	{
@@ -669,7 +725,8 @@ struct OptMenuTitle : public OptMenu
 	{
 		SDL_Rect a = {0,0,SCREEN_W,SCREEN_H};
 //		SDL_FillRect(screen, &a, SDL_MapRGB(screen->format, 10,25,25));
-		SDL_BlitSurface(titlePage, &a, screen, &a);
+		//SDL_BlitSurface(titlePage, &a, screen, &a);
+		SDL_RenderCopy(sdlRenderer, titlePage_tex, &a, &a);
 
 		OptMenu::RenderTitle();
 		OptMenu::RenderOptions();
@@ -864,7 +921,11 @@ struct Ending : public Menu
 	void Render()
 	{
 		SDL_Rect a = {0,0,SCREEN_W,SCREEN_H};
-		SDL_FillRect(screen, &a, SDL_MapRGB(screen->format, 10,25,25));
+		//SDL_FillRect(screen, &a, SDL_MapRGB(screen->format, 10,25,25));
+		SDL_SetRenderDrawColor(sdlRenderer, 10, 25, 25, 255);
+		SDL_RenderFillRect(sdlRenderer, &a);
+
+		SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 
 		for (unsigned int i=0; i<sizeof(p)/sizeof(p[0]); i++)
 			p[i].Update(t);
@@ -1021,6 +1082,7 @@ struct TitleMenu : public OptMenuTitle
 #endif
 	}
 	bool KeyPressed(int key, int mod);
+	bool JoyButtonPressed(int key);
 	void Cancel ();
 };
 
@@ -1182,6 +1244,21 @@ bool TitleMenu::KeyPressed(int key, int mod)
 		return true;
 	}
 	return OptMenu::KeyPressed(key, mod);
+}
+
+bool TitleMenu::JoyButtonPressed(int key)
+{
+	if (key==SDLK_DELETE || key==SDLK_BACKSPACE || key==SDLK_F2)
+	{
+		if (select<0 || select>=num_opt || opt[select]<OPT_GAMESLOT_0 || opt[select]>OPT_GAMESLOT_LAST)
+			return true;
+		int i = opt[select] - OPT_GAMESLOT_0;
+
+		new DeleteConfirmMenu(i);
+
+		return true;
+	}
+	return OptMenu::JoyButtonPressed(key);
 }
 
 void TitleMenu::Cancel ()

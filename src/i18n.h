@@ -18,6 +18,8 @@
 #ifndef _I18N_H
 #define _I18N_H
 
+#include <string>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -39,8 +41,11 @@ class GetTextInit
 #ifdef ENABLE_NLS
 		const char *GetEncoding() const;
 #endif
+	std::string getCurrentLanguage();	
 };
 
 static GetTextInit gettext_init;
+
+void InitLocalization();
 
 #endif

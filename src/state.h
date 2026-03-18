@@ -19,7 +19,7 @@
 #ifndef __HHOP_STATE_H__
 #define __HHOP_STATE_H__
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -113,6 +113,8 @@ public:
 
 	virtual bool KeyPressed(int key, int mod) = 0;
 	virtual void KeyReleased(int /*key*/) {};
+	virtual bool JoyButtonPressed(int key) = 0;
+	virtual void JoyButtonReleased(int /*button*/) {};
 	virtual void Mouse(int x, int y, int dx, int dy, int buttons_pressed, int buttons_released, int buttons) = 0;
 	virtual void Update(double timedelta) = 0;
 	virtual void Render() = 0;

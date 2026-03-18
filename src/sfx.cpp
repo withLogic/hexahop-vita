@@ -20,7 +20,7 @@
 #include <list>
 #include <vector>
 #include <ctime>
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include "sfx.h"
 #include "system-directory.h"
 
@@ -102,6 +102,13 @@ public:
 		{
 			name = lisys_dir_get_name (dir, i);
 			pth = lisys_dir_get_path (dir, i);
+
+			if(!HasExtension(name, ".ogg") && !HasExtension(name, ".wav"))
+			{
+				free (pth);
+				continue;
+			}
+
 			for (j = 0 ; j < HHOP_MUSIC_MAX ; j++)
 			{
 				if (strstr (name, music_names[j]) == name)
@@ -232,6 +239,14 @@ public:
 			music_curr = music_next;
 		}
 	}
+
+	bool HasExtension(const char* name, const char* ext) 
+	{
+		size_t nl = strlen(name);
+		size_t el = strlen(ext);
+		return nl >= el && strcasecmp(name + nl - el, ext) == 0;
+	}
+
 public:
 	int disable_music;
 	int disable_effects;

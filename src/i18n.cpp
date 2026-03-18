@@ -24,6 +24,11 @@
 #include <langinfo.h>
 #endif
 
+#ifdef __vita__
+#include <psp2/apputil.h>
+#include <psp2/system_param.h>
+#endif
+
 #ifdef ENABLE_NLS
 static std::string GetLocalePath()
 {
@@ -51,9 +56,21 @@ GetTextInit::GetTextInit()
 	{
 		IsInit = true;
 #ifdef ENABLE_NLS
-		setlocale (LC_MESSAGES, "");
-		setlocale (LC_CTYPE, "");
-		setlocale (LC_COLLATE, "");
+		std::string lang_code = "";
+		#ifdef __vita__
+
+		 lang_code = getCurrentLanguage();
+
+		static char env_string[32];
+		snprintf(env_string, sizeof(env_string), "LANG=%s", lang_code);
+
+		printf("Vita Language -> %s \n", lang_code.c_str());
+
+		#endif
+
+		setlocale (LC_MESSAGES, "fr");
+		setlocale (LC_CTYPE, "fr");
+		setlocale (LC_COLLATE, "fr");
 		textdomain ("hex-a-hop");
 		bindtextdomain ("hex-a-hop", GetLocalePath().c_str());
 #endif
@@ -71,3 +88,42 @@ const char *GetTextInit::GetEncoding() const
 	return locale_enc;
 }
 #endif
+
+std::string GetTextInit::getCurrentLanguage() {
+	#ifdef __vita__
+	int lang = -1;
+	sceAppUtilSystemParamGetInt(SCE_SYSTEM_PARAM_ID_LANG, &lang);
+
+	switch (lang) {
+		case SCE_SYSTEM_PARAM_LANG_JAPANESE:
+			return "ja";
+		case SCE_SYSTEM_PARAM_LANG_FRENCH:
+			return "fr";
+		case SCE_SYSTEM_PARAM_LANG_GERMAN:
+			return "de";
+		case SCE_SYSTEM_PARAM_LANG_KOREAN:
+			return "";
+		case SCE_SYSTEM_PARAM_LANG_ITALIAN:
+			return "it";
+		case SCE_SYSTEM_PARAM_LANG_SPANISH:
+			return "es";
+		case SCE_SYSTEM_PARAM_LANG_PORTUGUESE_BR:
+		case SCE_SYSTEM_PARAM_LANG_PORTUGUESE_PT:
+			return "";
+		case SCE_SYSTEM_PARAM_LANG_RUSSIAN:
+			return "ru";
+		case SCE_SYSTEM_PARAM_LANG_CHINESE_S:
+			return "";
+		case SCE_SYSTEM_PARAM_LANG_CHINESE_T:
+			return "";
+		default:
+			return "en";
+		}
+	#else
+		return "en";
+	#endif
+}
+
+void InitLocalization() {
+    static GetTextInit manual_init;
+}

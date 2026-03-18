@@ -16,16 +16,21 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
-#include "config.h"
+//#include "config.h"
 #include "i18n.h"
 #include "sfx.h"
+#include "joy.h"
 #include <map>
 #include <string>
 #include <iostream>
 #include <cctype> // TODO: remove it later
 #include <errno.h>
 #include <pwd.h>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
+
+#ifdef __vita__
+#undef _DEBUG
+#endif
 
 //////////////////////////////////////////////////////
 // Config
@@ -88,8 +93,9 @@ String GetFilePath(const char* file, const char* flags)
 {
 	extern String base_path;
 	String filename;
-
-#ifdef WIN32
+#ifdef __vita__
+filename = base_path + file;
+#elif defined(WIN32)
 	filename = base_path + file;
 #else
 	if (strncmp(file, "save", 4) == 0)
@@ -178,6 +184,12 @@ FILE *file_open( const char *file, const char *flags )
 
 #define X(NAME,FILE,ALPHA) SDL_Surface* NAME = 0;
 #include "gfx_list.h"
+#undef X
+
+#define X(NAME,FILE,ALPHA) SDL_Texture* NAME##_tex = 0;
+#include "gfx_list.h"
+#undef X
+
 int scrollX=0, scrollY=0, initScrollX=0, initScrollY=0;
 int mapRightBound = 0;
 int mapScrollX = 0;
@@ -692,7 +704,7 @@ public:
 void RenderTile(bool reflect, int t, int x, int y, int cliplift)
 {
 	SDL_Rect src = tile[reflect][t];
-	SDL_Rect dst = {x-scrollX-GFX_SIZE/2, y-scrollY-GFX_SIZE+TILE_H1, 0, 0};
+	SDL_Rect dst = {x-scrollX-GFX_SIZE/2, y-scrollY-GFX_SIZE+TILE_H1, src.w, src.h};
 	dst.x += tileOffset[reflect][t][0];
 	dst.y += tileOffset[reflect][t][1];
 	if (reflect)
@@ -701,7 +713,8 @@ void RenderTile(bool reflect, int t, int x, int y, int cliplift)
 	{
 	//	dst.w=src.w; dst.h=src.h;
 	//	SDL_FillRect(screen, &dst, rand());
-		SDL_BlitSurface(reflect ? tileGraphicsR : tileGraphics, &src, screen, &dst);
+		//SDL_BlitSurface(reflect ? tileGraphicsR : tileGraphics, &src, screen, &dst);
+		SDL_RenderCopy(sdlRenderer, reflect ? tileGraphicsR_tex : tileGraphics_tex, &src, &dst);
 	}
 	else
 	{
@@ -709,7 +722,8 @@ void RenderTile(bool reflect, int t, int x, int y, int cliplift)
 		if (src.h > TILE_W1)
 		{
 			src.h -= TILE_W1/2;
-			SDL_BlitSurface(tileGraphics, &src, screen, &dst);
+			//SDL_BlitSurface(tileGraphics, &src, screen, &dst);
+			SDL_RenderCopy(sdlRenderer, tileGraphics_tex, &src, &dst);
 			src.y += src.h;
 			dst.y += src.h;
 			src.h = TILE_W1/2;
@@ -718,7 +732,8 @@ void RenderTile(bool reflect, int t, int x, int y, int cliplift)
 		{
 			src.w -= TILE_W1*2, src.x += TILE_W1;
 			dst.x += TILE_W1;
-			SDL_BlitSurface(tileGraphics, &src, screen, &dst);
+			//SDL_BlitSurface(tileGraphics, &src, screen, &dst);
+			SDL_RenderCopy(sdlRenderer, tileGraphics_tex, &src, &dst);
 		}
 	}
 }
@@ -731,8 +746,9 @@ void RenderGirl(bool reflect, int r, int frame, int x, int y, int h)
 	else
 		y -= h;
 	SDL_Rect src = {sx, sy, 64, 80};
-	SDL_Rect dst = {x-scrollX-32, y-scrollY-65, 0, 0};
-	SDL_BlitSurface(girlGraphics, &src, screen, &dst);
+	SDL_Rect dst = {x-scrollX-32, y-scrollY-65, src.w, src.h};
+	//SDL_BlitSurface(girlGraphics, &src, screen, &dst);
+	SDL_RenderCopy(sdlRenderer, girlGraphics_tex, &src, &dst);
 }
 
 struct ItemRender : public RenderStage
@@ -2323,6 +2339,23 @@ struct HexPuzzle : public State
 		LoadSaveProgress(true);
 	}
 
+	SDL_Texture* SurfaceToTexture(SDL_Renderer* renderer, SDL_Surface* surf) 
+	{
+		if (!surf) {
+			return nullptr;
+		}
+
+		SDL_Surface* optimized = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA8888, 0);
+		
+		SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, optimized ? optimized : surf);
+		
+		if (optimized) {
+			SDL_FreeSurface(optimized);
+		}
+		
+		return tex;
+	}
+
 	SDL_Surface* Load(const char * bmp, bool colourKey=true)
 	{
 		typedef unsigned int uint32;
@@ -2388,8 +2421,8 @@ struct HexPuzzle : public State
 
 		if (!g) FATAL("Unable to load file", bmp);
 		if (colourKey)
-			SDL_SetColorKey(g, SDL_SRCCOLORKEY, SDL_MapRGB(g->format, WATER_COLOUR));
-		SDL_Surface * out = SDL_DisplayFormat(g);
+			SDL_SetColorKey(g, SDL_TRUE, SDL_MapRGB(g->format, WATER_COLOUR));
+		SDL_Surface * out = SDL_ConvertSurfaceFormat(g, SDL_PIXELFORMAT_RGBA8888, 0);
 		SDL_FreeSurface(g);
 		if (!out) FATAL("Unable to create SDL surface (SDL_DisplayFormat)");
 		return out;
@@ -2400,7 +2433,7 @@ struct HexPuzzle : public State
 	#endif
 	HexPuzzle()
 	{
-		SDL_WM_SetCaption(GAMENAME, 0);
+		SDL_SetWindowTitle(sdlWindow, GAMENAME);
 
 		time = 0;
 
@@ -2457,9 +2490,12 @@ struct HexPuzzle : public State
 	{
 		if (!activeMenu || activeMenu->renderBG)
 		{
-			SDL_Rect src  = {0,0,screen->w,screen->h};
-			SDL_Rect dst  = {0,0,screen->w,screen->h};
-			if (isRenderMap)
+			//SDL_Rect src  = {0,0,screen->w,screen->h};
+			//SDL_Rect dst  = {0,0,screen->w,screen->h};
+			SDL_Rect src  = {0, 0, SCREEN_W,SCREEN_H};
+			SDL_Rect dst  = {0, 0, SCREEN_W,SCREEN_H};
+
+			if (isRenderMap && mapBG != nullptr)
 			{
 				int boundW = mapBG->w;
 	#ifndef EDIT
@@ -2484,10 +2520,14 @@ struct HexPuzzle : public State
 				if (isMap)
 					mapScrollX = scrollX;
 
-				SDL_BlitSurface(mapBG, &src, screen, &dst);
+				//SDL_BlitSurface(mapBG, &src, screen, &dst);
+				SDL_RenderCopy(sdlRenderer, mapBG_tex, &src, &dst);
 			}
-			else
-				SDL_BlitSurface(gradient, &src, screen, &dst);
+			else 
+			{
+				//SDL_BlitSurface(gradient, &src, screen, &dst);
+				SDL_RenderCopy(sdlRenderer, gradient_tex, &src, &dst);
+			}
 
 			renderer.Render(time, true);
 
@@ -2517,12 +2557,14 @@ struct HexPuzzle : public State
 						src.x += (int)( sin(i*0.5 + time*6.2) * sin(i*0.3 + time*1.05) * 5 );
 						src.y += (int)( (sin(i*0.4 - time*4.3) * sin(i*0.08 + time*1.9) - 1) * 2.5 );
 					}
-					SDL_BlitSurface(screen, &src, screen, &dst);
+					//SDL_BlitSurface(screen, &src, screen, &dst);
 				}
 			}
 
-			if(isRenderMap)
-				SDL_BlitSurface(mapBG2, &src, screen, &dst);
+			if(isRenderMap) {
+				//SDL_BlitSurface(mapBG2, &src, screen, &dst);
+				SDL_RenderCopy(sdlRenderer, mapBG2_tex, &src, &dst);
+			}
 
 			renderer.Render(time, false);
 
@@ -2797,13 +2839,13 @@ struct HexPuzzle : public State
 
 #ifdef EDIT
 				sprintf(tmp, _("Special(%d,%d): %s (%d)"), s.x, s.y, sp ? sp : _("<None>"), GetPar(sp));
-				SDL_WM_SetCaption(tmp, NULL);
+				SDL_SetWindowTitle(sdlWindow, tmp);
 #endif
 			}
 			else if (currentFile[0])
 			{
 #ifdef EDIT
-				SDL_WM_SetCaption(currentFile, NULL);
+				SDL_SetWindowTitle(sdlWindow, currentFile);
 #endif
 				if (isMap)
 					currentLevelInfo = 0;
@@ -3873,6 +3915,34 @@ retry_pos:
 			return HandleKey(key, mod);
 		}
 	}
+
+	void JoyButtonReleased(int button)
+	{
+		int keyCode= MapJoyToScancode(button);
+		keyState[keyCode] = 0;
+	}
+
+	bool JoyButtonPressed(int button)
+	{
+		int keyCode= MapJoyToScancode(button);
+		keyState[keyCode] = 2;
+
+		if (activeMenu)
+		{
+			bool eat = activeMenu->JoyButtonPressed(button);
+			if (!activeMenu) {
+				keyState.clear();
+			}
+			
+			return eat;
+		} else {
+			if (isFadeRendering)
+				return false;
+
+			return HandleKey(keyCode, 0);
+		}
+	}
+
 	bool HandleKey(int key, int mod)
 	{
 		turboAnim = 0;
@@ -4055,13 +4125,13 @@ retry_pos:
 		else if (key=='s' && (mod & KMOD_CTRL)){
 			char *fn = LoadSaveDialog(true, true, _("Save level"));
 			LoadSave(fn, true);
-			SDL_WM_SetCaption(currentFile, NULL);
+			SDL_SetWindowTitle(sdlWindow, currentFile);
 		}
 
 		else if (key=='o' && (mod & KMOD_CTRL)){
 			char* fn = LoadSaveDialog(false, true, _("Open level"));
 			LoadSave(fn, false);
-			SDL_WM_SetCaption(currentFile, NULL);
+			SDL_SetWindowTitle(sdlWindow, currentFile);
 		}
 #endif
 
@@ -4081,6 +4151,12 @@ retry_pos:
 			first = false;
 			MakeTileInfo();
 		}
+
+		#define X(NAME,FILE,ALPHA) \
+			NAME##_tex = SurfaceToTexture(sdlRenderer, NAME); \
+			if (NAME) { SDL_FreeSurface(NAME); NAME = NULL; } 
+		#include "gfx_list.h"
+		#undef X
 
 	//	unsigned int d = {
 
