@@ -1,6 +1,10 @@
 # Hex-a-hop
 
 
+![Hex-A-Hop Title Screen](https://github.com/withLogic/hexahop-vita/blob/master/psp2/screenshots/2026-03-18-154118.jpg "Hex-A-Hop Title Screen")
+
+
+
 
 **Hex-A-Hop** is a hexagonal puzzle game where the goal is to destroy all the green tiles on a level. The catch? You can only step on each tile once. As you progress, the game introduces complex mechanics that turn simple movement into a brain-teasing challenge.
 
@@ -30,5 +34,5 @@ Website: [https://hexahop.sourceforge.net](https://hexahop.sourceforge.net)
 #### Vita Port
 
 * Updated the codebase from SDL1 to SDL2.
-* Added joystick support. 
+* Added joystick support.
 
