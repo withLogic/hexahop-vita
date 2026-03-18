@@ -36,3 +36,7 @@ Website: [https://hexahop.sourceforge.net](https://hexahop.sourceforge.net)
 * Updated the codebase from SDL1 to SDL2.
 * Added joystick support.
 
+#### Vita Port
+* Download the `data.zip` and vpk from the Releases page.
+* Install the vpk on your PS Vita
+* Extract data.zip files to `ux0:/data/hex-a-hop/`
